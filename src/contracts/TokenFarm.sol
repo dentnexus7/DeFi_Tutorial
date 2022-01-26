@@ -1,33 +1,34 @@
 pragma solidity ^0.5.0;
 
-import "./DappToken.sol";
 import "./DaiToken.sol";
+import "./GreggToken.sol";
 
 contract TokenFarm {
-    string public name = "Dapp Token Farm";
+    string public name = "Gregg's Token Farm";
     address public owner;
-    DappToken public dappToken;
+    GreggToken public greggToken;
     DaiToken public daiToken;
 
     address[] public stakers;
-    mapping(address => uint) public stakingBalance;
+    mapping(address => uint) public stakingBalance; 
     mapping(address => bool) public hasStaked;
     mapping(address => bool) public isStaking;
 
-    constructor(DappToken _dappToken, DaiToken _daiToken) public {
-        dappToken = _dappToken;
+    constructor(GreggToken _greggToken, DaiToken _daiToken) public {
+        greggToken = _greggToken;
         daiToken = _daiToken;
         owner = msg.sender;
     }
 
+    // Stake Tokens
     function stakeTokens(uint _amount) public {
         // Require amount greater than 0
         require(_amount > 0, "amount cannot be 0");
 
-        // Trasnfer Mock Dai tokens to this contract for staking
+        // Transfer Mock Dai tokens to this contract for staking
         daiToken.transferFrom(msg.sender, address(this), _amount);
 
-        // Update staking balance
+        // Update staking Balance
         stakingBalance[msg.sender] = stakingBalance[msg.sender] + _amount;
 
         // Add user to stakers array *only* if they haven't staked already
@@ -40,7 +41,7 @@ contract TokenFarm {
         hasStaked[msg.sender] = true;
     }
 
-    // Unstaking Tokens (Withdraw)
+    // Unstake Tokens (Withdraw)
     function unstakeTokens() public {
         // Fetch staking balance
         uint balance = stakingBalance[msg.sender];
@@ -68,8 +69,9 @@ contract TokenFarm {
             address recipient = stakers[i];
             uint balance = stakingBalance[recipient];
             if(balance > 0) {
-                dappToken.transfer(recipient, balance);
+                greggToken.transfer(recipient, balance);
             }
         }
     }
+
 }
